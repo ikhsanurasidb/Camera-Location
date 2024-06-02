@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Camera-Location</string>
+    <string name="take_photo">Capture</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="desc_preview">Result Photo</string>
+    <string name="latitude">Latitude: </string>
+    <string name="longitude">Longitude: </string>
+    <string name="btnDelete">Delete</string>
+</resources>
