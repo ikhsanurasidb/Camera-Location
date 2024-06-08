@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.MediaScannerConnection;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,7 +22,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
@@ -29,6 +33,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private final List<String> photoPaths;
     private final List<String> latitudeValue;
     private final List<String> longitudeValue;
+    private Geocoder geocoder;
+    private List<Address> addresses;
 
     public PhotoAdapter(Context context, List<String> photoPaths, List<String> latitudeValue, List<String> longitudeValue) {
         this.context = context;
@@ -138,9 +144,18 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         String latitude = latitudeValue.get(position);
         String longitude = longitudeValue.get(position);
 
+        try {
+            geocoder = new Geocoder(context, Locale.getDefault());
+            addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String address = addresses.get(0).getAddressLine(0);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Location Details");
-        builder.setMessage("Latitude: " + latitude + "\nLongitude: " + longitude);
+        builder.setMessage("Latitude: " + latitude + "\n\nLongitude: " + longitude + "\n\nAddress: " + address);
         builder.setPositiveButton("OK", null);
         AlertDialog dialog = builder.create();
         dialog.show();

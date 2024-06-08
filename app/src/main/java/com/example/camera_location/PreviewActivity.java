@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -35,18 +37,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class PreviewActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
-    private TextView latitudeTextView, longitudeTextView;
-    private String latitudeValue, longitudeValue;
+    private TextView latitudeTextView, longitudeTextView, addressTextView;
+    private Double latitudeValue, longitudeValue;
     private Database.TaskDBHelper mHelper;
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
     private Bitmap bitmap;
     private String photoPath;
+    private Geocoder geocoder;
+    private List<Address> addresses;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -59,6 +64,7 @@ public class PreviewActivity extends AppCompatActivity {
         Button btnCancel = findViewById(R.id.btnCancel);
         latitudeTextView = findViewById(R.id.latitudeTextView);
         longitudeTextView = findViewById(R.id.longitudeTextView);
+        addressTextView = findViewById(R.id.address);
 
         Intent intent = getIntent();
         photoPath = intent.getStringExtra("photoPath");
@@ -112,10 +118,21 @@ public class PreviewActivity extends AppCompatActivity {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
-                        latitudeValue = String.valueOf(location.getLatitude());
-                        latitudeTextView.setText(latitudeValue);
-                        longitudeValue = String.valueOf(location.getLongitude());
-                        longitudeTextView.setText(longitudeValue);
+                        latitudeValue = location.getLatitude();
+                        longitudeValue = location.getLongitude();
+
+                        try {
+                            geocoder = new Geocoder(this, Locale.getDefault());
+                            addresses = geocoder.getFromLocation(latitudeValue, longitudeValue, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                        latitudeTextView.setText(String.valueOf(latitudeValue));
+                        longitudeTextView.setText(String.valueOf(longitudeValue));
+                        addressTextView.setText(address);
                     }
                 });
     }
