@@ -31,12 +31,11 @@ import java.util.concurrent.Executor;
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ListenableFuture<ProcessCameraProvider> cameraProviderListenableFuture;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Button image_capture_button;
     private PreviewView view_finder;
     private ImageCapture imageCapture;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +48,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         requestPermissions();
 
-        cameraProviderListenableFuture = ProcessCameraProvider.getInstance(this);
-        cameraProviderListenableFuture.addListener(() -> {
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 startCameraX(cameraProvider);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
@@ -71,27 +70,19 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with camera operation
-            } else {
-                Toast.makeText(this, "Permissions are required to use the camera", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private Executor getExecutor() {
         return ContextCompat.getMainExecutor(this);
     }
 
     private void startCameraX(ProcessCameraProvider cameraProvider) {
         cameraProvider.unbindAll();
-        CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
 
-        Preview preview = new Preview.Builder().build();
+        Preview preview = new Preview.Builder()
+                .build();
+
         preview.setSurfaceProvider(view_finder.getSurfaceProvider());
 
         imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
