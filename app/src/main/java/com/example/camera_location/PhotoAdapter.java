@@ -44,7 +44,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public static void updateUI(MediaScannerConnection.OnScanCompletedListener onScanCompletedListener, PhotoAdapter adapter, RecyclerView recyclerView) {
-        Database.TaskDBHelper mHelper = new Database.TaskDBHelper((Context) onScanCompletedListener);
+        DBHandler.DBHelper mHelper = new DBHandler.DBHelper((Context) onScanCompletedListener);
 
         List<String> imagePaths = mHelper.getAllImagePaths();
         List<String> latitudeValue = mHelper.getAllImageLatitude();
@@ -86,7 +86,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public static void updateUI(Context context, PhotoAdapter adapter, RecyclerView recyclerView) {
-        Database.TaskDBHelper mHelper = new Database.TaskDBHelper(context);
+        DBHandler.DBHelper mHelper = new DBHandler.DBHelper(context);
 
         List<String> imagePaths = mHelper.getAllImagePaths();
         List<String> latitudeValue = mHelper.getAllImageLatitude();
@@ -108,11 +108,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public void deletePhoto(Context context, String photoPath, int position) {
-        Database.TaskDBHelper mHelper = new Database.TaskDBHelper(context);
+        DBHandler.DBHelper mHelper = new DBHandler.DBHelper(context);
         SQLiteDatabase db = mHelper.getWritableDatabase();
 
-        db.delete(Database.TaskContract.TaskEntry.TABLE,
-                Database.TaskContract.TaskEntry.COL_IMAGE_PATH + " = ?",
+        db.delete(DBHandler.Contract.TaskEntry.TABLE,
+                DBHandler.Contract.TaskEntry.COL_IMAGE_PATH + " = ?",
                 new String[]{photoPath});
         db.close();
 

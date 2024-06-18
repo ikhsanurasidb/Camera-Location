@@ -9,9 +9,9 @@ import android.provider.BaseColumns;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Database {
+public class DBHandler {
 
-    public static final class TaskContract {
+    public static final class Contract {
         public static final String DB_NAME = "com.example.camera_location.todolist.db";
         public static final int DB_VERSION = 1;
 
@@ -24,36 +24,36 @@ public class Database {
         }
     }
 
-    public static class TaskDBHelper extends SQLiteOpenHelper {
-        public TaskDBHelper(Context context) {
-            super(context, TaskContract.DB_NAME, null, TaskContract.DB_VERSION);
+    public static class DBHelper extends SQLiteOpenHelper {
+        public DBHelper(Context context) {
+            super(context, Contract.DB_NAME, null, Contract.DB_VERSION);
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            String createTable = "CREATE TABLE " + TaskContract.TaskEntry.TABLE + " ( "
-                    + TaskContract.TaskEntry.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + TaskContract.TaskEntry.COL_IMAGE_PATH + " TEXT NOT NULL, "
-                    + TaskContract.TaskEntry.COL_LATITUDE + " TEXT NOT NULL, "
-                    + TaskContract.TaskEntry.COL_LONGITUDE + " TEXT NOT NULL);";
+            String createTable = "CREATE TABLE " + Contract.TaskEntry.TABLE + " ( "
+                    + Contract.TaskEntry.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + Contract.TaskEntry.COL_IMAGE_PATH + " TEXT NOT NULL, "
+                    + Contract.TaskEntry.COL_LATITUDE + " TEXT NOT NULL, "
+                    + Contract.TaskEntry.COL_LONGITUDE + " TEXT NOT NULL);";
             db.execSQL(createTable);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TaskContract.TaskEntry.TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + Contract.TaskEntry.TABLE);
             onCreate(db);
         }
 
         public List<String> getAllImagePaths() {
             List<String> imagePaths = new ArrayList<>();
             SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                    new String[]{TaskContract.TaskEntry.COL_IMAGE_PATH},
+            Cursor cursor = db.query(Contract.TaskEntry.TABLE,
+                    new String[]{Contract.TaskEntry.COL_IMAGE_PATH},
                     null, null, null, null, null);
 
             while (cursor.moveToNext()) {
-                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_IMAGE_PATH);
+                int idx = cursor.getColumnIndex(Contract.TaskEntry.COL_IMAGE_PATH);
                 imagePaths.add(cursor.getString(idx));
             }
             cursor.close();
@@ -64,12 +64,12 @@ public class Database {
         public List<String> getAllImageLatitude() {
             List<String> latitudeValue = new ArrayList<>();
             SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                    new String[]{TaskContract.TaskEntry.COL_LATITUDE},
+            Cursor cursor = db.query(Contract.TaskEntry.TABLE,
+                    new String[]{Contract.TaskEntry.COL_LATITUDE},
                     null, null, null, null, null);
 
             while (cursor.moveToNext()) {
-                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_LATITUDE);
+                int idx = cursor.getColumnIndex(Contract.TaskEntry.COL_LATITUDE);
                 latitudeValue.add(cursor.getString(idx));
             }
             cursor.close();
@@ -80,12 +80,12 @@ public class Database {
         public List<String> getAllImageLongitude() {
             List<String> longitudeValue = new ArrayList<>();
             SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                    new String[]{TaskContract.TaskEntry.COL_LONGITUDE},
+            Cursor cursor = db.query(Contract.TaskEntry.TABLE,
+                    new String[]{Contract.TaskEntry.COL_LONGITUDE},
                     null, null, null, null, null);
 
             while (cursor.moveToNext()) {
-                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_LONGITUDE);
+                int idx = cursor.getColumnIndex(Contract.TaskEntry.COL_LONGITUDE);
                 longitudeValue.add(cursor.getString(idx));
             }
             cursor.close();

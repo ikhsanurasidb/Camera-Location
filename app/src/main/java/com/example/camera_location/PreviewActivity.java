@@ -10,14 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,7 +42,7 @@ public class PreviewActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private TextView latitudeTextView, longitudeTextView, addressTextView;
     private Double latitudeValue, longitudeValue;
-    private Database.TaskDBHelper mHelper;
+    private DBHandler.DBHelper mHelper;
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
     private Bitmap bitmap;
@@ -71,7 +68,7 @@ public class PreviewActivity extends AppCompatActivity {
         bitmap = BitmapFactory.decodeFile(photoPath);
         resultPreview.setImageBitmap(bitmap);
 
-        mHelper = new Database.TaskDBHelper(this);
+        mHelper = new DBHandler.DBHelper(this);
 
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(), result -> {
@@ -169,10 +166,10 @@ public class PreviewActivity extends AppCompatActivity {
                         public void onScanCompleted(String path, Uri uri) {
                             SQLiteDatabase db = mHelper.getWritableDatabase();
                             ContentValues values = new ContentValues();
-                            values.put(Database.TaskContract.TaskEntry.COL_IMAGE_PATH, path);
-                            values.put(Database.TaskContract.TaskEntry.COL_LATITUDE, latitudeValue);
-                            values.put(Database.TaskContract.TaskEntry.COL_LONGITUDE, longitudeValue);
-                            db.insertWithOnConflict(Database.TaskContract.TaskEntry.TABLE,
+                            values.put(DBHandler.Contract.TaskEntry.COL_IMAGE_PATH, path);
+                            values.put(DBHandler.Contract.TaskEntry.COL_LATITUDE, latitudeValue);
+                            values.put(DBHandler.Contract.TaskEntry.COL_LONGITUDE, longitudeValue);
+                            db.insertWithOnConflict(DBHandler.Contract.TaskEntry.TABLE,
                                     null,
                                     values,
                                     SQLiteDatabase.CONFLICT_REPLACE);
